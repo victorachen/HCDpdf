@@ -1,8 +1,8 @@
-#start doing electrical load
+
 #map all the park ID's, enter into the HCD 415 app field
 #how many trailers can you have in your name? if so, put name in LLC name [ ask HCD on monday -- calendar]
 
-from PyPDF2 import PdfFileReader, PdfFileWriter
+from PyPDF2 import PdfFileReader, PdfFileWriter, PdfFileMerger
 import openpyxl
 from openpyxl import load_workbook
 
@@ -24,11 +24,10 @@ def openpyxl():
 
     #append a bunch of (hard coded) stuff to the back of the dictionary
     d = append_dic(d)
-
-    print(d)
+    # print(d)
     return d
 
-#append stuff to the excel-made-dictionary (above)
+#append (hard coding) stuff to the excel-made-dictionary (above)
 #ex)from "9_date", we can deduce that the month is "April" and day is "15"; add this stuff to the back of the dictionary
 def append_dic(d):
     todays_month = d['9_date'][0:4]
@@ -42,7 +41,26 @@ def append_dic(d):
     d['8_llc'] = d['8_llc']+', carrier-- Victor Chen'
     d['6_SitusAddress'] = d['6_SitusAddress'] + ', Yucaipa, CA 92399'
     d['7_Parkname'] = d['7_Parkname'] + ' Mobile Home Park'
+    d['Elec_A'] = d['10_length'] * d['11_width']*3
+    d['Elec_D'] = d['Elec_A'] + 1500
+    d['Elec_E'] = min(3000, d['Elec_D'])
+    d['Elec_F'] = round(max(d['Elec_E'] - 3000,0) * .35,0)
+    d['Elec_G'] = d['Elec_E'] + d['Elec_F']
+    d['Elec_H'] = round(d['Elec_G']/240,1)
+    d['Elec_line12'] = max(30,d['Elec_H'])*.25
+    d['Elec_line13'] = d['Elec_H'] + 30 + d['Elec_line12']
+    d['parkID'] = parkID(d['7_Parkname'])
     return d
+
+#given park name, return park ID
+def parkID(parkname):
+    parkIDs = {'Hitching Post':'36-0289-MP','Westwind':'36-0464-MP','Holiday':'36-0405-MP','Wishing Well':'36-0370-MP',
+               'Mt Vista':'36-0330-MP','Crestview':'36-0595-MP','Patrician':'36-0484-MP'}
+    for i in parkIDs:
+        if i in parkname:
+            return parkIDs[i]
+        else:
+            return 'N/A'
 
 # helper function, that alters PDF (maps whatever is in dictionary)
 def alterpdf(emptypath,filledpath):
@@ -62,55 +80,25 @@ def alterpdf(emptypath,filledpath):
         with open(filledpath, "wb") as output_stream:
             writer.write(output_stream)
 
-#for the title trasnfer process
-def dupcerttitle():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\dupcerttitle_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\dupcertitle_filled.pdf'
-    alterpdf(emptypath,filledpath)
-def dupregcard():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\dupregcard_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\dupregcard_filled.pdf'
-    alterpdf(emptypath,filledpath)
-def billofsale():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\billofsale_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\billofsale_filled.pdf'
-    alterpdf(emptypath, filledpath)
-def multipurposetransfer():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\multipurposetransfer_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\multipurposetransfer_filled.pdf'
-    alterpdf(emptypath, filledpath)
-
-#for the construction permit
-def hcd415():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\hcd415_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\hcd415_filled.pdf'
-    alterpdf(emptypath, filledpath)
-def electricalload():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\electricalload_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\electricalload_filled.pdf'
-    alterpdf(emptypath, filledpath)
-
-#extra stuff you might need
-def retailvalue():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\retailvalue_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\retailvalue_filled.pdf'
-    alterpdf(emptypath, filledpath)
-def statementfacts():
-    emptypath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\input\statementfacts_empty.pdf'
-    filledpath = r'C:\Users\Lenovo\PycharmProjects\HCDpdf\output\statementfacts_filled.pdf'
-    alterpdf(emptypath, filledpath)
-
+#fill up them PDFs baby
+def fill():
+    L = ['dupcerttitle', 'dupregcard', "billofsale", 'multipurposetransfer', \
+         'hcd415', 'electricalload', 'retailvalue', 'statementfacts']
+    for i in L:
+        emptypath = 'C:\\Users\\Lenovo\\PycharmProjects\\HCDpdf\\input\\'+ i +'_empty.pdf'
+        filledpath = 'C:\\Users\\Lenovo\\PycharmProjects\\HCDpdf\\output\\' + i +'_filled.pdf'
+        alterpdf(emptypath,filledpath)
 
 #combine every file in the filled path
 def combine():
-    dupcerttitle()
-    dupregcard()
-    billofsale()
-    multipurposetransfer()
-    hcd415()
-    # electricalload()
-    # retailvalue()
-    # statementfacts()
+    merger = PdfFileMerger()
+    L = ['dupcerttitle', 'dupregcard', "billofsale", 'multipurposetransfer', \
+         'hcd415', 'electricalload', 'retailvalue', 'statementfacts', 'AC_specs']
+    for i in L:
+        file = 'C:\\Users\\Lenovo\\PycharmProjects\\HCDpdf\\output\\' + i +'_filled.pdf'
+        merger.append(PdfFileReader(open(file,'rb')))
+    merger.write(r'C:\Users\Lenovo\PycharmProjects\HCDpdf\combined.pdf')
     return None
 
+fill()
 combine()
