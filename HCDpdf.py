@@ -1,7 +1,3 @@
-
-#map all the park ID's, enter into the HCD 415 app field
-#how many trailers can you have in your name? if so, put name in LLC name [ ask HCD on monday -- calendar]
-
 from PyPDF2 import PdfFileReader, PdfFileWriter, PdfFileMerger
 import openpyxl
 from openpyxl import load_workbook
@@ -44,7 +40,8 @@ def append_dic(d):
     d['Elec_A'] = d['10_length'] * d['11_width']*3
     d['Elec_D'] = d['Elec_A'] + 1500
     d['Elec_E'] = min(3000, d['Elec_D'])
-    d['Elec_F'] = round(max(d['Elec_E'] - 3000,0) * .35,0)
+    d['Elec_F'] = round(max(d['Elec_D'] - 3000,0) * .35,0)
+    d['Elec_F2'] =round(max(d['Elec_D'] - 3000,0),0)
     d['Elec_G'] = d['Elec_E'] + d['Elec_F']
     d['Elec_H'] = round(d['Elec_G']/240,1)
     d['Elec_line12'] = max(30,d['Elec_H'])*.25
