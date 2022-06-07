@@ -51,13 +51,12 @@ def append_dic(d):
 
 #given park name, return park ID
 def parkID(parkname):
-    parkIDs = {'Hitching Post':'36-0289-MP','Westwind':'36-0464-MP','Holiday':'36-0405-MP','Wishing Well':'36-0370-MP',
-               'Mt Vista':'36-0330-MP','Crestview':'36-0595-MP','Patrician':'36-0484-MP'}
-    for i in parkIDs:
+    d = {'Hitching Post':'36-0289-MP','Westwind':'36-0464-MP','Holiday':'36-0405-MP','Wishing Well':'36-0370-MP',\
+         'Mt Vista':'36-0330-MP','Crestview':'36-0595-MP','Patrician':'36-0484-MP'}
+    for i in d:
         if i in parkname:
-            return parkIDs[i]
-        else:
-            return 'N/A'
+            return d[i]
+    return('N/A')
 
 # helper function, that alters PDF (maps whatever is in dictionary)
 def alterpdf(emptypath,filledpath):
