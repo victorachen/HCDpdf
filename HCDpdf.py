@@ -44,8 +44,8 @@ def append_dic(d):
     d['Elec_F2'] =round(max(d['Elec_D'] - 3000,0),0)
     d['Elec_G'] = d['Elec_E'] + d['Elec_F']
     d['Elec_H'] = round(d['Elec_G']/240,1)
-    d['Elec_line12'] = max(30,d['Elec_H'])*.25
-    d['Elec_line13'] = d['Elec_H'] + 30 + d['Elec_line12']
+    d['Elec_line12'] = max(13,d['Elec_H'])*.25
+    d['Elec_line13'] = d['Elec_H'] + 13 + d['Elec_line12']
     d['parkID'] = parkID(d['7_Parkname'])
     return d
 
