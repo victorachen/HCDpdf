@@ -9,6 +9,8 @@ def openpyxl():
     sheet = file.active
 
     d = {}
+    print('max row:')
+    print(sheet.max_row)
     for row in range(sheet.max_row):
         num = sheet.cell(row=row+1, column=2).value
         field = sheet.cell(row=row+1, column=3).value
@@ -20,7 +22,7 @@ def openpyxl():
 
     #append a bunch of (hard coded) stuff to the back of the dictionary
     d = append_dic(d)
-    # print(d)
+    print(d)
     return d
 
 #append (hard coding) stuff to the excel-made-dictionary (above)
@@ -45,14 +47,16 @@ def append_dic(d):
     d['Elec_G'] = d['Elec_E'] + d['Elec_F']
     d['Elec_H'] = round(d['Elec_G']/240,1)
     d['Elec_line12'] = max(13,d['Elec_H'])*.25
-    d['Elec_line13'] = d['Elec_H'] + 13 + d['Elec_line12']
+    d['Elec_line13'] = d['Elec_H'] + 1+1+3+1+13 + d['Elec_line12']
+    d['Elec_line14'] = 5 + d['Elec_line13']
     d['parkID'] = parkID(d['7_Parkname'])
     return d
 
 #given park name, return park ID
 def parkID(parkname):
     d = {'Hitching Post':'36-0289-MP','Westwind':'36-0464-MP','Holiday':'36-0405-MP','Wishing Well':'36-0370-MP',\
-         'Mt Vista':'36-0330-MP','Crestview':'36-0595-MP','Patrician':'36-0484-MP'}
+         'Mt Vista':'36-0330-MP','Crestview':'36-0595-MP','Patrician':'36-0484-MP',
+         'Aladdin':'36-0372-MP','Avalon':'36-0423-MP','Bonanza':'36-0471-MP'}
     for i in d:
         if i in parkname:
             return d[i]
@@ -89,7 +93,7 @@ def fill():
 def combine():
     merger = PdfFileMerger()
     L = ['dupcerttitle', 'dupregcard', "billofsale", 'multipurposetransfer', \
-         'hcd415', 'electricalload', 'retailvalue', 'statementfacts', 'AC_specs']
+         'hcd415', 'electricalload', 'retailvalue', 'statementfacts', 'AC_specs','AC_specs2','tanklessWH']
     for i in L:
         file = 'C:\\Users\\Lenovo\\PycharmProjects\\HCDpdf\\output\\' + i +'_filled.pdf'
         merger.append(PdfFileReader(open(file,'rb')))
